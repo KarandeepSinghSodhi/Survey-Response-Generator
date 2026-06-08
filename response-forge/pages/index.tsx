@@ -53,22 +53,34 @@ export default function Home() {
             <p style={{ marginBottom: 24, color: "#c7cffb" }}>
               This demo uses the exact assignment questions and creates N plausible responses with consistent satisfaction, NPS, category, delivery, and open feedback.
             </p>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <h3>1. Satisfaction</h3>
-                <p>1–5 scale</p>
+            <div className="definition-list">
+              <div className="definition-item">
+                <div className="definition-badge">1</div>
+                <div className="definition-content">
+                  <h4 className="definition-title">Satisfaction</h4>
+                  <p className="definition-desc">1–5 scale rating of overall purchase happiness</p>
+                </div>
               </div>
-              <div className="stat-card">
-                <h3>2. Likelihood to recommend</h3>
-                <p>0–10 NPS</p>
+              <div className="definition-item">
+                <div className="definition-badge">2</div>
+                <div className="definition-content">
+                  <h4 className="definition-title">Likelihood to recommend</h4>
+                  <p className="definition-desc">0–10 standard Net Promoter Score (NPS)</p>
+                </div>
               </div>
-              <div className="stat-card">
-                <h3>3. Category</h3>
-                <p>Electronics / Clothing / Home / Other</p>
+              <div className="definition-item">
+                <div className="definition-badge">3</div>
+                <div className="definition-content">
+                  <h4 className="definition-title">Category</h4>
+                  <p className="definition-desc">Product type: Electronics / Clothing / Home / Other</p>
+                </div>
               </div>
-              <div className="stat-card">
-                <h3>4. Delivery</h3>
-                <p>Yes / No</p>
+              <div className="definition-item">
+                <div className="definition-badge">4</div>
+                <div className="definition-content">
+                  <h4 className="definition-title">Delivery</h4>
+                  <p className="definition-desc">Was the delivery received on-time? (Yes / No)</p>
+                </div>
               </div>
             </div>
           </div>
@@ -93,19 +105,19 @@ export default function Home() {
           <div className="card-grid" style={{ marginTop: 28 }}>
             <div className="stat-card">
               <h3>Responses</h3>
-              <p>{dataset ? dataset.length : 0}</p>
+              <p className="stat-value">{dataset ? dataset.length : 0}</p>
             </div>
             <div className="stat-card">
               <h3>Average satisfaction</h3>
-              <p>{summary ? summary.average : "—"}</p>
+              <p className="stat-value">{summary ? summary.average : "—"}</p>
             </div>
             <div className="stat-card">
               <h3>Average NPS</h3>
-              <p>{summary ? summary.npsAverage : "—"}</p>
+              <p className="stat-value">{summary ? summary.npsAverage : "—"}</p>
             </div>
             <div className="stat-card">
               <h3>On-time rate</h3>
-              <p>{summary ? `${summary.onTimeRate}%` : "—"}</p>
+              <p className="stat-value">{summary ? `${summary.onTimeRate}%` : "—"}</p>
             </div>
           </div>
         </div>

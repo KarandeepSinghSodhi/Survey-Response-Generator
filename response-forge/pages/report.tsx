@@ -81,19 +81,19 @@ export default function Report() {
             <div className="stats-grid">
               <div className="stat-card">
                 <h3>Total responses</h3>
-                <p>{rows.length}</p>
+                <p className="stat-value">{rows.length}</p>
               </div>
               <div className="stat-card">
                 <h3>Avg satisfaction</h3>
-                <p>{summary ? formatNumber(summary.avgSatisfaction) : "—"}</p>
+                <p className="stat-value">{summary ? formatNumber(summary.avgSatisfaction) : "—"}</p>
               </div>
               <div className="stat-card">
                 <h3>Avg NPS</h3>
-                <p>{summary ? formatNumber(summary.avgNps) : "—"}</p>
+                <p className="stat-value">{summary ? formatNumber(summary.avgNps) : "—"}</p>
               </div>
               <div className="stat-card">
                 <h3>On-time delivery</h3>
-                <p>{summary ? `${Math.round(summary.onTimeRate * 100)}%` : "—"}</p>
+                <p className="stat-value">{summary ? `${Math.round(summary.onTimeRate * 100)}%` : "—"}</p>
               </div>
             </div>
           </div>

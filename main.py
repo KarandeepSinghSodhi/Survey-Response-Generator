@@ -4,14 +4,30 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 
-try:
-    from survey_generator import create_synthetic_dataset, build_report, OUTPUT_CSV, OUTPUT_REPORT
-except Exception:
-    # Import errors will be surfaced when running; keep module importable for edit-time
-    create_synthetic_dataset = None
-    build_report = None
-    OUTPUT_CSV = "responses.csv"
-    OUTPUT_REPORT = "quality_report.html"
+# Defer importing the heavy generator until it's needed so the API can start
+create_synthetic_dataset = None
+build_report = None
+OUTPUT_CSV = "responses.csv"
+OUTPUT_REPORT = "quality_report.html"
+_generator_import_error = None
+
+def _ensure_generator():
+    """Attempt to import the generator modules on demand. Returns True if available."""
+    global create_synthetic_dataset, build_report, OUTPUT_CSV, OUTPUT_REPORT, _generator_import_error
+    if create_synthetic_dataset is not None:
+        return True
+    try:
+        from survey_generator import create_synthetic_dataset as _create, build_report as _build, OUTPUT_CSV as _csv, OUTPUT_REPORT as _rep
+        create_synthetic_dataset = _create
+        build_report = _build
+        OUTPUT_CSV = _csv
+        OUTPUT_REPORT = _rep
+        _generator_import_error = None
+        return True
+    except Exception as e:
+        import traceback
+        _generator_import_error = traceback.format_exc()
+        return False
 
 app = FastAPI(title="Survey Sensum Backend")
 
@@ -34,8 +50,13 @@ def health():
 
 @app.post("/generate")
 def generate(req: GenerateRequest):
-    if create_synthetic_dataset is None:
-        return JSONResponse({"error": "Backend not configured. Ensure server is run from project root with dependencies installed."}, status_code=500)
+    # ensure the generator modules are importable
+    ok = _ensure_generator()
+    if not ok:
+        return JSONResponse({
+            "error": "Backend generator import failed. Install dependencies and run from repo root.",
+            "trace": _generator_import_error.splitlines()[-10:] if _generator_import_error else None,
+        }, status_code=500)
 
     results = create_synthetic_dataset(req.count)
     df = results["df"]

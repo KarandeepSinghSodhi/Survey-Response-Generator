@@ -54,11 +54,11 @@ export default function Responses() {
             <div className="stats-grid">
               <div className="stat-card">
                 <h3>Total rows</h3>
-                <p>{rows.length}</p>
+                <p className="stat-value">{rows.length}</p>
               </div>
               <div className="stat-card">
                 <h3>Visible rows</h3>
-                <p>{filteredRows.length}</p>
+                <p className="stat-value">{filteredRows.length}</p>
               </div>
             </div>
           </div>

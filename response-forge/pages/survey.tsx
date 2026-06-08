@@ -272,23 +272,23 @@ export default function SurveyForm() {
               <div className="stats-grid" style={{ marginBottom: 32 }}>
                 <div className="stat-card">
                   <h3>Avg Satisfaction</h3>
-                  <p>
+                  <p className="stat-value">
                     {(responses.reduce((sum, r) => sum + r.satisfaction, 0) / responses.length).toFixed(1)}
                   </p>
                 </div>
                 <div className="stat-card">
                   <h3>Avg NPS</h3>
-                  <p>
+                  <p className="stat-value">
                     {(responses.reduce((sum, r) => sum + r.nps, 0) / responses.length).toFixed(1)}
                   </p>
                 </div>
                 <div className="stat-card">
                   <h3>On-time Delivery</h3>
-                  <p>{Math.round((responses.filter((r) => r.delivery === "Yes").length / responses.length) * 100)}%</p>
+                  <p className="stat-value">{Math.round((responses.filter((r) => r.delivery === "Yes").length / responses.length) * 100)}%</p>
                 </div>
                 <div className="stat-card">
                   <h3>Top Category</h3>
-                  <p>
+                  <p className="stat-value">
                     {
                       Object.entries(responses.reduce<Record<string, number>>((acc, r) => {
                         acc[r.category] = (acc[r.category] ?? 0) + 1;

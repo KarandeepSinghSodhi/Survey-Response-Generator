@@ -150,6 +150,9 @@ button {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .stat-card h3 {
@@ -160,8 +163,71 @@ button {
 
 .stat-card p {
   margin: 0;
+  font-size: 0.95rem;
+  color: #bec7ff;
+  line-height: 1.5;
+}
+
+.stat-card .stat-value {
+  margin-top: auto;
   font-size: 2rem;
   font-weight: 700;
+  color: #f5f7ff;
+}
+
+/* Survey definition section list */
+.definition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.definition-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.definition-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(124, 92, 255, 0.2);
+}
+
+.definition-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(124, 92, 255, 0.14);
+  color: #a3b1ff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.definition-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.definition-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #f5f7ff;
+  font-weight: 600;
+}
+
+.definition-desc {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #bec7ff;
 }
 
 .card-title {
