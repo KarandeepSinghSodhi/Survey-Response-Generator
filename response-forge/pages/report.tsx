@@ -29,13 +29,8 @@ export default function Report() {
   const [rows, setRows] = useState<SyntheticResponse[]>([]);
 
   useEffect(() => {
-    // Try to load survey responses first, then fall back to synthetic responses
-    const surveyResponses = window.localStorage.getItem("survey-responses");
     const syntheticResponses = window.localStorage.getItem("survey-sensum-responses");
-    
-    if (surveyResponses) {
-      setRows(JSON.parse(surveyResponses));
-    } else if (syntheticResponses) {
+    if (syntheticResponses) {
       setRows(JSON.parse(syntheticResponses));
     }
   }, []);

@@ -6,19 +6,11 @@ import { Search, ListChecks } from "lucide-react";
 export default function Responses() {
   const [rows, setRows] = useState<SyntheticResponse[]>([]);
   const [filter, setFilter] = useState("");
-  const [dataSource, setDataSource] = useState<"survey" | "synthetic">("synthetic");
 
   useEffect(() => {
-    // Try to load survey responses first, then fall back to synthetic responses
-    const surveyResponses = window.localStorage.getItem("survey-responses");
     const syntheticResponses = window.localStorage.getItem("survey-sensum-responses");
-    
-    if (surveyResponses) {
-      setRows(JSON.parse(surveyResponses));
-      setDataSource("survey");
-    } else if (syntheticResponses) {
+    if (syntheticResponses) {
       setRows(JSON.parse(syntheticResponses));
-      setDataSource("synthetic");
     }
   }, []);
 
@@ -39,13 +31,10 @@ export default function Responses() {
             </div>
             <h1 className="page-title">Responses</h1>
             <p className="subtitle" style={{ marginTop: 24 }}>
-              {dataSource === "survey" 
-                ? "View all manually entered survey responses with detailed feedback."
-                : "Search by category, delivery, persona, or commentary to inspect the dataset."}
+              Search by category, delivery, persona, or commentary to inspect the dataset.
             </p>
             <div style={{ marginTop: 32, display: "flex", gap: 16, flexWrap: "wrap" }}>
               <Link href="/" className="button secondary">Back home</Link>
-              {dataSource === "survey" && <Link href="/survey" className="button secondary">Add more responses</Link>}
               <Link href="/report" className="button">View report</Link>
             </div>
           </div>
@@ -97,7 +86,7 @@ export default function Responses() {
                   <th>Satisfaction</th>
                   <th>NPS</th>
                   <th>Delivery</th>
-                  {dataSource === "synthetic" && <th>Persona</th>}
+                  <th>Persona</th>
                   <th>Feedback</th>
                 </tr>
               </thead>
@@ -109,7 +98,7 @@ export default function Responses() {
                     <td>{row.satisfaction}</td>
                     <td>{row.nps}</td>
                     <td>{row.delivery}</td>
-                    {dataSource === "synthetic" && <td>{(row as any).persona}</td>}
+                    <td>{row.persona}</td>
                     <td>{row.feedback}</td>
                   </tr>
                 ))}

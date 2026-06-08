@@ -1,0 +1,11 @@
+satisfaction,nps,category,delivery,feedback,persona
+3,5,Home,No,"I got what I ordered, but the shipping took longer than it should have.",Trend Seeker
+5,10,Home,Yes,Everything worked out well and the package came when promised.,Home Comfort Shopper
+4,9,Home,Yes,The order arrived on time and the product quality matched my expectations.,Delivery-Sensitive Shopper
+4,8,Electronics,Yes,Delivery was smooth and the item was exactly what I wanted.,Value Seeker
+4,8,Home,No,"The item was good, but the delivery arrived later than expected.",Home Comfort Shopper
+4,9,Other,Yes,Delivery was smooth and the item was exactly what I wanted.,Value Seeker
+4,8,Home,Yes,The order arrived on time and the product quality matched my expectations.,Home Comfort Shopper
+3,5,Other,No,"The product was acceptable, though delivery delays hurt the overall experience.",Delivery-Sensitive Shopper
+5,9,Electronics,Yes,Everything worked out well and the package came when promised.,Trend Seeker
+4,9,Electronics,Yes,Everything worked out well and the package came when promised.,Value Seeker

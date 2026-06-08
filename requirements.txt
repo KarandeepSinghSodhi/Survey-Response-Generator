@@ -4,8 +4,6 @@ scikit-learn
 matplotlib
 seaborn
 jinja2
-transformers
-torch
 openai
 
 # Backend API

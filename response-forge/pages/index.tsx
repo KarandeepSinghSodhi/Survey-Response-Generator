@@ -128,7 +128,6 @@ export default function Home() {
               <button className="button" onClick={handleGenerate} disabled={loading}>
                 {loading ? "Generating..." : `Generate ${responseCount} responses`}
               </button>
-              <Link href="/survey" className="button secondary">Add responses manually</Link>
               <Link href="/report" className="button secondary">View report</Link>
               <Link href="/responses" className="button secondary">View responses</Link>
             </div>

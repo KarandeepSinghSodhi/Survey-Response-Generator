@@ -47,13 +47,23 @@ class GenerateRequest(BaseModel):
 
 @app.get("/health")
 def health():
+    generator_available = _ensure_generator()
+    if not generator_available:
+        return {
+            "status": "error",
+            "message": "Generator modules failed to load. Check installation or environment.",
+            "error": _generator_import_error
+        }
     return {"status": "ok"}
 
 
 @app.post("/generate")
 def generate(req: GenerateRequest):
-    if create_synthetic_dataset is None:
-        return JSONResponse({"error": "Backend not configured. Ensure server is run from project root with dependencies installed."}, status_code=500)
+    if not _ensure_generator():
+        return JSONResponse({
+            "error": "Backend not configured. Ensure server is run from project root with dependencies installed.",
+            "details": _generator_import_error
+        }, status_code=500)
 
     results = create_synthetic_dataset(req.count, delivery_rate=req.delivery_rate, sentiment_bias=req.sentiment_bias)
     df = results["df"]
@@ -78,6 +88,7 @@ def generate(req: GenerateRequest):
 
 @app.get("/responses")
 def responses_file():
+    _ensure_generator()
     if not os.path.exists(OUTPUT_CSV):
         return JSONResponse({"error": "responses.csv not found. Generate data first."}, status_code=404)
     return FileResponse(OUTPUT_CSV, media_type="text/csv", filename="responses.csv")
@@ -85,6 +96,7 @@ def responses_file():
 
 @app.get("/report")
 def report_file():
+    _ensure_generator()
     if not os.path.exists(OUTPUT_REPORT):
         return JSONResponse({"error": "quality_report.html not found. Generate data first."}, status_code=404)
     return FileResponse(OUTPUT_REPORT, media_type="text/html", filename="quality_report.html")
