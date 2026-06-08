@@ -3,7 +3,7 @@ import random
 from typing import Dict
 
 TRANSFORMER_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
-OPENAI_MODEL = "gpt-3.5-turbo"
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 
 
 def _make_prompt(context: Dict[str, str]) -> str:
@@ -111,8 +111,12 @@ def generate_feedback(context: Dict[str, str]) -> str:
         try:
             import openai
             prompt = _make_prompt(context)
+            api_base = os.getenv("OPENAI_API_BASE")
             if hasattr(openai, "OpenAI"):
-                client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+                client = openai.OpenAI(
+                    api_key=os.environ["OPENAI_API_KEY"],
+                    base_url=api_base
+                )
                 response = client.chat.completions.create(
                     model=OPENAI_MODEL,
                     messages=[{"role": "user", "content": prompt}],
@@ -122,6 +126,8 @@ def generate_feedback(context: Dict[str, str]) -> str:
                 text = response.choices[0].message.content.strip()
             else:
                 openai.api_key = os.environ["OPENAI_API_KEY"]
+                if api_base:
+                    openai.api_base = api_base
                 response = openai.ChatCompletion.create(
                     model=OPENAI_MODEL,
                     messages=[{"role": "user", "content": prompt}],
