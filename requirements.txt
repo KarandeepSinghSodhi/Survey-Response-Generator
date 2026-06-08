@@ -7,3 +7,9 @@ jinja2
 transformers
 torch
 openai
+
+# Backend API
+fastapi
+uvicorn[standard]
+aiofiles
+python-multipart

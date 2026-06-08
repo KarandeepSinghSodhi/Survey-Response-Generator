@@ -93,6 +93,36 @@ vercel deploy
 - README references to deleted markdown files have been removed
 - The repository is now structured for both local development and Vercel deployment
 
+## Backend Deployment (optional)
+
+I provide a minimal FastAPI wrapper to run the Python generator as a simple web service.
+
+1. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Run locally with Uvicorn:
+
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+3. Endpoints:
+- `GET /health` — health check
+- `POST /generate` — JSON body `{ "count": 200 }` triggers generation and returns a summary
+- `GET /responses` — download `responses.csv`
+- `GET /report` — download `quality_report.html`
+
+4. Deploy on a Python-friendly host (Render, Railway, Fly, Cloud Run):
+- Ensure `requirements.txt` includes `fastapi` and `uvicorn[standard]` (already updated)
+- Use the provided `Procfile` (start command uses Uvicorn)
+
+Notes:
+- The frontend currently reads/writes to `localStorage`. To integrate with the backend, update the frontend API calls to use these endpoints and authenticate as needed.
+
+
 ## License
 
 Add a license here if desired.
