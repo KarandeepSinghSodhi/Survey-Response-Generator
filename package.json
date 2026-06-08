@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "cd response-forge && npm run dev",
+    "build": "cd response-forge && npm ci && npm run build",
+    "start": "cd response-forge && npm run start"
+  }
+}
