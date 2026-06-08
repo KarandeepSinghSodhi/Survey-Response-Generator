@@ -28,7 +28,7 @@ OUTPUT_REPORT = "quality_report.html"
 TARGET_COUNT = 200
 
 
-def create_synthetic_dataset(target_count: int = TARGET_COUNT) -> Dict[str, object]:
+def create_synthetic_dataset(target_count: int = TARGET_COUNT, delivery_rate: float = 0.8, sentiment_bias: float = 0.0) -> Dict[str, object]:
     profiles = generate_population(target_count)
     records = []
     persona_counts: Dict[str, int] = {}
@@ -37,7 +37,7 @@ def create_synthetic_dataset(target_count: int = TARGET_COUNT) -> Dict[str, obje
 
     for profile in profiles:
         persona_counts[profile.persona] = persona_counts.get(profile.persona, 0) + 1
-        latent = simulate_latent_state(profile)
+        latent = simulate_latent_state(profile, delivery_rate=delivery_rate, sentiment_bias=sentiment_bias)
         response = map_latent_to_response(latent)
         response["persona"] = profile.persona
         accepted = False
@@ -61,6 +61,7 @@ def create_synthetic_dataset(target_count: int = TARGET_COUNT) -> Dict[str, obje
                 "category": response["category"],
                 "delivery": response["delivery"],
                 "feedback": response["feedback"],
+                "persona": response["persona"],
             })
             accepted = True
             break
@@ -72,6 +73,7 @@ def create_synthetic_dataset(target_count: int = TARGET_COUNT) -> Dict[str, obje
                 "category": response["category"],
                 "delivery": response["delivery"],
                 "feedback": response["feedback"],
+                "persona": response["persona"],
             })
 
     df = pd.DataFrame(records)

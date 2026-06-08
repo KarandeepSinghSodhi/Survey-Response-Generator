@@ -41,6 +41,8 @@ app.add_middleware(
 
 class GenerateRequest(BaseModel):
     count: int = 200
+    delivery_rate: float = 0.8
+    sentiment_bias: float = 0.0
 
 
 @app.get("/health")
@@ -50,15 +52,10 @@ def health():
 
 @app.post("/generate")
 def generate(req: GenerateRequest):
-    # ensure the generator modules are importable
-    ok = _ensure_generator()
-    if not ok:
-        return JSONResponse({
-            "error": "Backend generator import failed. Install dependencies and run from repo root.",
-            "trace": _generator_import_error.splitlines()[-10:] if _generator_import_error else None,
-        }, status_code=500)
+    if create_synthetic_dataset is None:
+        return JSONResponse({"error": "Backend not configured. Ensure server is run from project root with dependencies installed."}, status_code=500)
 
-    results = create_synthetic_dataset(req.count)
+    results = create_synthetic_dataset(req.count, delivery_rate=req.delivery_rate, sentiment_bias=req.sentiment_bias)
     df = results["df"]
     df.to_csv(OUTPUT_CSV, index=False)
 
@@ -68,7 +65,15 @@ def generate(req: GenerateRequest):
     except Exception:
         pass
 
-    return {"summary": results.get("summary", {}), "responses": len(df)}
+    records = df.to_dict(orient="records")
+    for i, r in enumerate(records):
+        r["id"] = i + 1
+
+    return {
+        "summary": results.get("summary", {}),
+        "responses": len(df),
+        "records": records
+    }
 
 
 @app.get("/responses")

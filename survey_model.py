@@ -139,7 +139,7 @@ def sample_category(profile: CustomerProfile) -> str:
     return weighted_choice(CATEGORIES, normalized)
 
 
-def simulate_latent_state(profile: CustomerProfile) -> LatentState:
+def simulate_latent_state(profile: CustomerProfile, delivery_rate: float = 0.8, sentiment_bias: float = 0.0) -> LatentState:
     category = sample_category(profile)
 
     category_bias = {
@@ -170,7 +170,7 @@ def simulate_latent_state(profile: CustomerProfile) -> LatentState:
         + np.random.normal(0, 0.07)
     )
 
-    delivery_prob = clamp(0.85 - 0.18 * profile.delivery_sensitivity + 0.08 * (profile.shopping_frequency == "low"))
+    delivery_prob = clamp(delivery_rate - 0.15 * profile.delivery_sensitivity + 0.05 * (profile.shopping_frequency == "low"))
     delivery_on_time = random.random() < delivery_prob
     delivery_experience = clamp(
         0.82
@@ -191,6 +191,7 @@ def simulate_latent_state(profile: CustomerProfile) -> LatentState:
         0.5 * product_experience
         + 0.3 * delivery_experience
         + 0.2 * price_perception
+        + sentiment_bias
         + np.random.normal(0, 0.04)
     )
 

@@ -156,16 +156,16 @@ const getResponseFromScore = (score: number, deliveryOnTime: boolean) => {
   return { satisfaction, nps };
 };
 
-export const generateSyntheticResponses = (count: number) => {
+export const generateSyntheticResponses = (count: number, deliveryRate = 0.8, sentimentBias = 0.0) => {
   return Array.from({ length: count }, (_, index) => {
     const profile = makeProfile();
     const category = chooseCategory(profile.persona, profile.techSavviness, profile.income, profile.frequency);
-    const deliveryChance = clamp(0.78 + 0.08 * (profile.frequency === "low" ? 1 : 0) - 0.12 * (profile.persona === "Delivery-Sensitive Shopper" ? 1 : 0));
+    const deliveryChance = clamp(deliveryRate + 0.08 * (profile.frequency === "low" ? 1 : 0) - 0.12 * (profile.persona === "Delivery-Sensitive Shopper" ? 1 : 0));
     const deliveryOnTime = Math.random() < deliveryChance;
     const productScore = clamp(0.46 + 0.22 * (profile.techSavviness > 0.68 ? 1 : 0) + 0.16 * (profile.persona === "Trend Seeker" ? 1 : 0) + (category === "Electronics" ? 0.08 : category === "Home" ? 0.05 : 0));
     const deliveryScore = clamp(deliveryOnTime ? 0.84 : 0.36);
     const priceScore = clamp(0.43 + 0.24 * (profile.income === "high" ? 1 : 0) - 0.11 * (profile.persona === "Value Seeker" ? 1 : 0));
-    const satisfactionSignal = clamp(0.48 * productScore + 0.28 * deliveryScore + 0.24 * priceScore + (Math.random() * 0.06 - 0.03));
+    const satisfactionSignal = clamp(0.48 * productScore + 0.28 * deliveryScore + 0.24 * priceScore + sentimentBias + (Math.random() * 0.06 - 0.03));
 
     const { satisfaction, nps } = getResponseFromScore(satisfactionSignal, deliveryOnTime);
     const feedback = buildFeedback({ satisfaction, delivery: deliveryOnTime ? "Yes" : "No", category, persona: profile.persona });

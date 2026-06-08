@@ -18,14 +18,50 @@ const summaryFromData = (data: SyntheticResponse[]) => {
 
 export default function Home() {
   const [responseCount, setResponseCount] = useState(DEFAULT_COUNT);
+  const [deliveryRate, setDeliveryRate] = useState(0.8);
+  const [sentimentBias, setSentimentBias] = useState(0.0);
   const [dataset, setDataset] = useState<SyntheticResponse[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const summary = useMemo(() => (dataset ? summaryFromData(dataset) : null), [dataset]);
 
-  const handleGenerate = () => {
-    const rows = generateSyntheticResponses(responseCount);
-    setDataset(rows);
-    window.localStorage.setItem("survey-sensum-responses", JSON.stringify(rows));
+  const handleGenerate = async () => {
+    setLoading(true);
+    setError(null);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    try {
+      const res = await fetch(`${apiUrl}/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          count: responseCount,
+          delivery_rate: deliveryRate,
+          sentiment_bias: sentimentBias,
+        }),
+      });
+      if (!res.ok) throw new Error("Server returned an error status");
+      
+      const data = await res.json();
+      if (data && data.records) {
+        setDataset(data.records);
+        window.localStorage.setItem("survey-sensum-responses", JSON.stringify(data.records));
+        setLoading(false);
+        return;
+      }
+    } catch (e) {
+      console.warn("Backend API not reachable. Falling back to local offline generation.", e);
+      setError("Backend unreachable (or booting up). Fell back to offline generation.");
+      
+      // Fallback to client-side generation
+      const rows = generateSyntheticResponses(responseCount, deliveryRate, sentimentBias);
+      setDataset(rows);
+      window.localStorage.setItem("survey-sensum-responses", JSON.stringify(rows));
+      
+      // Clear error after 5 seconds
+      setTimeout(() => setError(null), 5000);
+    }
+    setLoading(false);
   };
 
   return (
@@ -41,12 +77,66 @@ export default function Home() {
             <p className="subtitle" style={{ marginTop: 24 }}>
               A polished front-end for the assignment survey. Generate coherent customer answers, explore the analytics report, and inspect every response from a responsive dashboard.
             </p>
-            <div style={{ marginTop: 36, display: "flex", flexWrap: "wrap", gap: 16 }}>
-              <button className="button" onClick={handleGenerate}>Generate {responseCount} responses</button>
+
+            {/* Parameter Adjustment Panel */}
+            <div style={{ marginTop: 28, background: "rgba(255, 255, 255, 0.03)", padding: 20, borderRadius: 20, border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: "0.95rem", color: "#9aa7ff", fontWeight: 600 }}>Generator Controls</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+                <div>
+                  <label className="label" style={{ fontSize: "0.8rem", color: "#bec7ff", marginBottom: 4 }}>Response Count (N)</label>
+                  <input
+                    type="number"
+                    min="10"
+                    max="500"
+                    value={responseCount}
+                    onChange={(e) => setResponseCount(Math.min(500, Math.max(10, parseInt(e.target.value) || 10)))}
+                    className="input"
+                    style={{ padding: "8px 12px", borderRadius: 10, fontSize: "0.9rem", height: 40 }}
+                  />
+                </div>
+                <div>
+                  <label className="label" style={{ fontSize: "0.8rem", color: "#bec7ff", marginBottom: 4 }}>On-Time Delivery Rate</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, height: 40 }}>
+                    <input
+                      type="range"
+                      min="10"
+                      max="100"
+                      value={deliveryRate * 100}
+                      onChange={(e) => setDeliveryRate(parseInt(e.target.value) / 100)}
+                      style={{ width: "100%", accentColor: "#7c5cff", cursor: "pointer" }}
+                    />
+                    <span style={{ fontSize: "0.85rem", color: "#fff", fontWeight: 600, width: 36, textAlign: "right" }}>{Math.round(deliveryRate * 100)}%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="label" style={{ fontSize: "0.8rem", color: "#bec7ff", marginBottom: 4 }}>Satisfaction Bias</label>
+                  <select
+                    value={sentimentBias}
+                    onChange={(e) => setSentimentBias(parseFloat(e.target.value))}
+                    className="select"
+                    style={{ padding: "8px 12px", borderRadius: 10, fontSize: "0.9rem", height: 40 }}
+                  >
+                    <option value="-0.2">Negative Skew</option>
+                    <option value="0.0">Balanced / Neutral</option>
+                    <option value="0.2">Positive Skew</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 28, display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+              <button className="button" onClick={handleGenerate} disabled={loading}>
+                {loading ? "Generating..." : `Generate ${responseCount} responses`}
+              </button>
               <Link href="/survey" className="button secondary">Add responses manually</Link>
               <Link href="/report" className="button secondary">View report</Link>
               <Link href="/responses" className="button secondary">View responses</Link>
             </div>
+            {error && (
+              <div style={{ marginTop: 16, color: "#ff8c8c", fontSize: "0.9rem", display: "flex", gap: 8, alignItems: "center" }}>
+                <span>⚠️</span> {error}
+              </div>
+            )}
           </div>
           <div className="glass-card" style={{ padding: 32 }}>
             <h2 className="card-title">Survey definition</h2>
