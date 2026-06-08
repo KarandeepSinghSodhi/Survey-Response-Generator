@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# Node
+response-forge/node_modules/
+response-forge/.next/
+response-forge/out/
+
+# IDE
+.vscode/
+.DS_Store
