@@ -95,33 +95,40 @@ const chooseCategory = (persona: string, techSavviness: number, income: string, 
 const buildFeedback = ({ satisfaction, delivery, category, persona }: { satisfaction: number; delivery: "Yes" | "No"; category: string; persona: string; }) => {
   const goodDelivery = delivery === "Yes";
   const positive = satisfaction >= 4;
-  const templates = [
-    `I appreciated how quickly the ${category.toLowerCase()} item arrived and it matched the description well.`,
-    `The experience felt polished, especially since delivery was on time and the product quality was strong.`,
-    `I enjoyed the value for money and the order was handled smoothly from checkout to delivery.`,
-    `The product arrived before I expected it, and I’m happy with how it performs.`,
-    `Delivery was a highlight, but I’d love more polish on product packaging next time.`,
-    `Everything worked well on the order, though the item could be a bit more impressive for the price.`,
-    `The purchase was solid, but I think the experience would improve with faster updates on shipping status.`,
-    `I liked the item overall, though the delivery updates were a little light this time.`,
-    `It was an easy experience, but the product felt slightly underwhelming for the category.`,
-    `The package arrived late and that made the whole order feel less reliable.`,
-    `Shipping delays hurt the otherwise good product quality.`,
-    `I got what I needed, but the late delivery made the experience frustrating.`,
-    `The item was okay, but the shipping timeline was disappointing.`,
-    `Delivery missed the window and it made the whole purchase feel rushed.`,
-  ];
+
+  let chosenTemplates: string[];
 
   if (positive && goodDelivery) {
-    return templates[0];
+    chosenTemplates = [
+      `I appreciated how quickly the ${category.toLowerCase()} item arrived and it matched the description well.`,
+      `The experience felt polished, especially since delivery was on time and the product quality was strong.`,
+      `I enjoyed the value for money and the order was handled smoothly from checkout to delivery.`,
+      `The product arrived before I expected it, and I’m happy with how it performs.`,
+    ];
+  } else if (positive && !goodDelivery) {
+    chosenTemplates = [
+      `I liked the item overall, though the delivery updates were a little light this time.`,
+      `The purchase was solid, but I think the experience would improve with faster updates on shipping status.`,
+      `The product quality met my expectations, but the shipping was delayed.`,
+    ];
+  } else if (!positive && goodDelivery) {
+    chosenTemplates = [
+      `Everything worked well on the order, though the item could be a bit more impressive for the price.`,
+      `It was an easy experience, but the product felt slightly underwhelming for the category.`,
+      `Delivery was on time, but the product quality did not meet my expectations.`,
+    ];
+  } else {
+    chosenTemplates = [
+      `The package arrived late and that made the whole order feel less reliable.`,
+      `Shipping delays hurt the otherwise good product quality.`,
+      `I got what I needed, but the late delivery made the experience frustrating.`,
+      `The item was okay, but the shipping timeline was disappointing.`,
+      `Delivery missed the window and it made the whole purchase feel rushed.`,
+    ];
   }
-  if (positive && !goodDelivery) {
-    return templates[7];
-  }
-  if (!positive && goodDelivery) {
-    return templates[5];
-  }
-  return templates[10];
+
+  const randomIndex = Math.floor(Math.random() * chosenTemplates.length);
+  return chosenTemplates[randomIndex];
 };
 
 const getResponseFromScore = (score: number, deliveryOnTime: boolean) => {

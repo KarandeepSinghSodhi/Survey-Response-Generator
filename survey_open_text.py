@@ -110,18 +110,27 @@ def generate_feedback(context: Dict[str, str]) -> str:
     if os.getenv("OPENAI_API_KEY"):
         try:
             import openai
-
-            openai.api_key = os.environ["OPENAI_API_KEY"]
             prompt = _make_prompt(context)
-            response = openai.ChatCompletion.create(
-                model=OPENAI_MODEL,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.8,
-                max_tokens=80,
-            )
-            text = response.choices[0].message.content.strip()
+            if hasattr(openai, "OpenAI"):
+                client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+                response = client.chat.completions.create(
+                    model=OPENAI_MODEL,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.8,
+                    max_tokens=80,
+                )
+                text = response.choices[0].message.content.strip()
+            else:
+                openai.api_key = os.environ["OPENAI_API_KEY"]
+                response = openai.ChatCompletion.create(
+                    model=OPENAI_MODEL,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.8,
+                    max_tokens=80,
+                )
+                text = response.choices[0].message.content.strip()
             if text:
                 return text.replace("\n", " ").strip()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"OpenAI generation failed: {e}")
     return _fallback_feedback(context)
